@@ -1,0 +1,45 @@
+ATIVIDADE FULL STACK — REGISTRO DE COMANDOS E RESULTADOS
+Data de referência informada: 05/11/2026
+Projeto: D:\Usuários\Berk_\Desktop\atividade_fs
+
+AMBIENTE
+python --version
+Resultado: Python 3.12.5
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Resultado: dependências instaladas (FastAPI, Uvicorn, Pydantic, pytest, pytest-cov e httpx).
+
+SERVIDOR
+.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --port 8001
+Resultado: Uvicorn running on http://127.0.0.1:8001; Application startup complete.
+GET http://127.0.0.1:8001/
+Resultado: 200 (interface)
+GET http://127.0.0.1:8001/docs
+Resultado: 200 (Swagger)
+
+API EXERCITADA (base URL http://127.0.0.1:8001; script temporário work/exercicio_api.py)
+POST /api/reservas com laboratório Laboratório Evidência 6, data 2026-11-05, turno noite, quantidade 6: 201, id 1.
+POST /api/reservas com quantidade_pessoas=0: 422 (greater_than_equal, ge=1).
+GET /api/reservas/999999: 404.
+POST repetido para mesmo laboratório/data/turno: 409.
+PUT /api/reservas/1 alterando apenas responsavel: 200.
+GET /api/reservas?turno=noite: 200, reserva noturna encontrada.
+Resumo antes/depois da criação: total 0/noite 0 → total 1/noite 1.
+A interface também foi usada para criar a reserva id 2 e mostrou “Sucesso: reserva 2 salva.”
+
+PERSISTÊNCIA E LIMPEZA
+Servidor encerrado e iniciado novamente na porta 8001.
+GET /api/reservas/1 após reinício: 200; registro permaneceu.
+DELETE /api/reservas/1: 204; GET posterior: 404.
+DELETE /api/reservas/2: 204. Banco de exercício terminou com lista vazia.
+Banco normal dados/reservas.db foi verificado com 0 registros após a suíte.
+
+TESTES
+.\.venv\Scripts\python.exe -m pytest -v
+Resultado final após restauração do teste: 7 passed, 1 aviso, 0.37s.
+.\.venv\Scripts\python.exe -m pytest --cov=backend.app --cov-report=term-missing
+Resultado: 7 passed; cobertura total 94%; main.py 92%; services.py 93%; schemas.py e database.py 100%.
+Falha demonstrativa temporária: expectativa 202 para status da criação; obtido 201. O arquivo tests/test_api.py foi restaurado da cópia de segurança work/test_api.py.backup e a suíte completa foi executada novamente com sucesso.
+
+OBSERVAÇÃO DE PORTA
+A porta 8000 já estava ocupada por uma instância preexistente de outro diretório do mesmo projeto. A cópia solicitada em atividade_fs foi executada isoladamente na porta 8001. O registro id 7 criado durante a primeira verificação de disponibilidade na instância 8000 foi conferido pelos seus campos e removido (DELETE 204); nenhum outro registro foi alterado.
